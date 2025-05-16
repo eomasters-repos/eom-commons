@@ -23,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.eomasters.icons.Icons;
@@ -67,19 +68,24 @@ public class ClearTextFieldOverlayButton {
 
   public void show() {
     if (!isShowing.compareAndExchange(false, true)) {
-      clearButton.setIcon(Icons.CANCEL.getImageIcon(textField.getHeight() - 2));
+      int iconSize = textField.getHeight() - 10;
+      clearButton.setIcon(Icons.CANCEL.getImageIcon(iconSize));
       clearButton.doLayout();
-      clearButton.setPreferredSize(new Dimension(20, clearButton.getPreferredSize().height));
-      int xPos = textField.getWidth() - clearButton.getPreferredSize().width;
-      hoverPopup.show(textField, xPos, 1);
-      textField.grabFocus();
+      clearButton.setPreferredSize(new Dimension(iconSize, iconSize));
+      int xPos = textField.getWidth() - clearButton.getPreferredSize().width - 5;
+      int yPos = textField.getHeight() / 2 - clearButton.getPreferredSize().height / 2;
+      hoverPopup.show(textField, xPos, yPos);
+
+      // Use SwingUtilities.invokeLater to delay focus grab
+      SwingUtilities.invokeLater(textField::grabFocus);
     }
   }
 
   public void hide() {
     if (isShowing.compareAndExchange(true, false)) {
       hoverPopup.setVisible(false);
-      textField.grabFocus();
+      // Use SwingUtilities.invokeLater to delay focus grab
+      SwingUtilities.invokeLater(textField::grabFocus);
     }
   }
 
