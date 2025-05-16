@@ -54,19 +54,20 @@ public class Audio {
     try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioInput)) {
       // Executor service is used to play the audio in a separate thread. This is necessary because the audio
       // clip would be terminated immediately. LineListener is used to close the audio clip after it has been played.
-      // if executor would be a static field, it would prevent closing the main thread if not shutdown.
-      ExecutorService executor = Executors.newSingleThreadExecutor();
+      // If executor were a static field, it would prevent closing the main thread if not shutdown.
+      try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
 
-      Clip clip = AudioSystem.getClip();
-      clip.open(audioStream);
-      clip.addLineListener(event -> {
-        if (event.getType() == LineEvent.Type.STOP) {
-          clip.close();
-          executor.shutdown();
-        }
-      });
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioStream);
+        clip.addLineListener(event -> {
+          if (event.getType() == LineEvent.Type.STOP) {
+            clip.close();
+            executor.shutdown();
+          }
+        });
 
-      executor.submit(clip::start);
+        executor.submit(clip::start);
+      }
     } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
       throw new AudioException(e);
     }
