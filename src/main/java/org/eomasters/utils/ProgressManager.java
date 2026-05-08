@@ -3,7 +3,7 @@
  * EOM Commons - Library of common utilities for Java
  * -> https://www.eomasters.org/
  * ======================================================================
- * Copyright (C) 2023 - 2025 Marco Peters
+ * Copyright (C) 2023 - 2026 Marco Peters
  * ======================================================================
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,6 +20,7 @@ package org.eomasters.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public class ProgressManager {
@@ -32,6 +33,10 @@ public class ProgressManager {
 
   private ProgressManager() {
     // prevent instantiation
+  }
+
+  public static Optional<ProgressTask> getTask(String taskID) {
+    return Optional.ofNullable(instance.tasks.get(taskID));
   }
 
   public static ProgressTask registerTask(String taskID, int amount) {

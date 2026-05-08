@@ -3,7 +3,7 @@
  * EOM Commons - Library of common utilities for Java
  * -> https://www.eomasters.org/
  * ======================================================================
- * Copyright (C) 2023 - 2025 Marco Peters
+ * Copyright (C) 2023 - 2026 Marco Peters
  * ======================================================================
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -61,12 +61,13 @@ public class ProgressTask implements AutoCloseable{
     return this;
   }
 
-  public ProgressTask with(String subTaskID, int parentWorkSteps) {
+  public ProgressTask with(String subTaskID, int parentWorkSteps, int amount) {
     if (parentWorkSteps > totalWork) {
       throw new IllegalArgumentException("parentWorkSteps must be less than or equal to work of parent task");
     }
     subTaskIDs.put(subTaskID, parentWorkSteps);
     ProgressManager.addProgressListener(subTaskID, subProgressListener);
+    ProgressManager.registerTask(subTaskID, amount);
     return this;
   }
 

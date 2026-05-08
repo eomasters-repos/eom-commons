@@ -3,7 +3,7 @@
  * EOM Commons - Library of common utilities for Java
  * -> https://www.eomasters.org/
  * ======================================================================
- * Copyright (C) 2023 - 2025 Marco Peters
+ * Copyright (C) 2023 - 2026 Marco Peters
  * ======================================================================
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -17,13 +17,11 @@
 
 package org.eomasters.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 class ProgressManagerTest {
 
@@ -88,13 +86,13 @@ class ProgressManagerTest {
   @Test
   void testProgressReportingWithSubTasks() {
     ProgressTask task1 = ProgressManager.registerTask("task", 10)
-                                        .with("subtask1", 5)
-                                        .with("subtask2", 2);
+                                        .with("subtask1", 5, 2)
+                                        .with("subtask2", 2, 10);
 
-    ProgressTask subtask1 = ProgressManager.registerTask("subtask1", 2);
+    ProgressTask subtask1 = ProgressManager.getTask("subtask1").orElseThrow();
     subtask1.worked(1);
 
-    ProgressTask subtask2 = ProgressManager.registerTask("subtask2", 10);
+    ProgressTask subtask2 = ProgressManager.getTask("subtask2").orElseThrow();
     subtask2.worked(5);
 
     assertEquals(50, subtask1.getProgress());
@@ -112,11 +110,10 @@ class ProgressManagerTest {
 
   @Test
   void testProgressReportingWithSubSubTasks() {
-    ProgressTask task1 = ProgressManager.registerTask("task", 10)
-                                        .with("subtask1", 5);
-    ProgressTask subtask1 = ProgressManager.registerTask("subtask1", 5)
-                                           .with("subsubtask1", 2);
-    ProgressTask subsubtask1 = ProgressManager.registerTask("subsubtask1", 10);
+    ProgressTask task1 = ProgressManager.registerTask("task", 10).with("subtask1", 5, 5);
+    ProgressTask subtask1 = ProgressManager.getTask("subtask1").orElseThrow()
+                                           .with("subsubtask1", 2, 10);
+    ProgressTask subsubtask1 = ProgressManager.getTask("subsubtask1").orElseThrow();
 
     subsubtask1.worked(5);
     assertEquals(50, subsubtask1.getProgress());
@@ -136,10 +133,9 @@ class ProgressManagerTest {
   @Test
   void testTaskSpecificListenerNotification() {
     ProgressTask task = ProgressManager.registerTask("task", 10)
-                                       .with("subtask1", 5);
-    ProgressTask subtask1 = ProgressManager.registerTask("subtask1", 5)
-                                           .with("subsubtask1", 2);
-    ProgressTask subsubtask1 = ProgressManager.registerTask("subsubtask1", 10);
+                                       .with("subtask1", 5, 5);
+    ProgressTask subtask1 = ProgressManager.getTask("subtask1").orElseThrow().with("subsubtask1", 2, 10);
+    ProgressTask subsubtask1 = ProgressManager.getTask("subsubtask1").orElseThrow();
 
     final AtomicInteger generalProgressCounter = new AtomicInteger();
     final AtomicInteger generalIsDones = new AtomicInteger();
