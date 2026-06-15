@@ -20,7 +20,7 @@ jobs:
         with:
           repository: eomasters-repos/mvn-repo
           path: mvn-repo
-          token: ${{ secrets.REPO_PUSH_TOKEN }}
+          token: ${{ secrets.Push_To_Maven_Repo }}
 
       - name: Checkout code
         uses: actions/checkout@v4
